@@ -1,0 +1,170 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=27mm]{geometry}
+\usepackage{amsmath,amssymb,amsthm,booktabs,array,colortbl}
+\usepackage[hidelinks]{hyperref}
+\usepackage{microtype}
+\usepackage{xcolor}
+\definecolor{accent}{HTML}{1E537E}
+\hypersetup{pdftitle={How Long Should an Exam Be?},pdfsubject={Binomial probabilities, concentration, and optimal exam length}}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+\newcommand{\Prb}{\mathbb P}
+\newcommand{\E}{\mathbb E}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\Bin}{\operatorname{Bin}}
+\title{\sffamily\bfseries How Long Should an Exam Be?\\[4pt]\large A Binomial Risk--Reward Problem}
+\author{}
+\date{November 2026}
+\begin{document}
+\maketitle
+\begin{abstract}
+A short test makes a perfect score more likely, but also makes an unexpectedly poor score more likely. A long test concentrates the observed score near the student's underlying accuracy. We model this trade-off with independent Bernoulli questions, establish a convex-order comparison between test lengths, and pose two precise optimisation problems. In an illustrative example, a seven-question test maximises the probability of a perfect score while keeping the probability of a mark below 70\% under 1\%. The exact finite-sample problem exhibits a striking sawtooth effect that large-deviation approximations smooth away.
+\end{abstract}
+
+\section{The question}
+A student preparing for an exam notices that getting one question wrong matters much more when an exam contains only a few questions. But a short exam also offers the best chance of getting \emph{every} question right. Is there an optimal number of questions?
+
+The answer depends on what ``optimal'' means. If the only objective is expected percentage score, every test length is equivalent in the simple model below. A meaningful finite optimum appears when a student values a perfect score but wants to limit the probability of a bad outcome.
+
+\section{A binomial model}
+Assume each question is answered incorrectly with probability $\varepsilon\in(0,1)$, independently of other questions, with the same probability on each question. For a test with $n\geq1$ questions, write
+\begin{equation}
+ K_n\sim\Bin(n,\varepsilon),\qquad S_n=1-\frac{K_n}{n},
+ \label{eq:model}
+\end{equation}
+where $K_n$ is the number of mistakes and $S_n$ is the proportion correct. Then
+\begin{equation}
+ \E S_n=1-\varepsilon,\qquad
+ \Var(S_n)=\frac{\varepsilon(1-\varepsilon)}{n}.
+\end{equation}
+In particular, the expected percentage does not change with $n$, but the distribution becomes more concentrated. The two extreme outcomes have probabilities
+\begin{equation}
+ \Prb(S_n=1)=(1-\varepsilon)^n,\qquad
+ \Prb(S_n=0)=\varepsilon^n.
+ \label{eq:extremes}
+\end{equation}
+Both become less likely as $n$ increases. The second is usually very small for a reasonably competent student; an ordinary ``bad mark'' is a more useful risk measure.
+
+For a threshold $r\in(0,1)$, define a bad result as a score \emph{strictly below} $r$. Because marks lie on a lattice, this means at least
+\begin{equation}
+ m(n,r)=\lfloor n(1-r)\rfloor+1
+ \label{eq:cutoff}
+\end{equation}
+errors. Its exact probability is
+\begin{equation}
+ B_n(r,\varepsilon):=\Prb(S_n<r)
+ =\sum_{k=m(n,r)}^n {n\choose k}\varepsilon^k(1-\varepsilon)^{n-k}.
+ \label{eq:bad}
+\end{equation}
+The strict inequality matters at scores exactly equal to the threshold.
+
+\section{Why shorter exams are intrinsically riskier}
+There is a stronger statement than the variance formula.
+
+\begin{proposition}[Convex-order comparison]
+For any convex function $\phi:[0,1]\to\mathbb R$ and integers $1\leq n<m$,
+\begin{equation}
+ \E\,\phi(S_n)\;\geq\;\E\,\phi(S_m).
+ \label{eq:convex}
+\end{equation}
+Equivalently, the distribution of the shorter test score is a mean-preserving spread of that of the longer test.
+\end{proposition}
+\begin{proof}
+It suffices to compare $n$ and $n+1$. Take $n+1$ independent zero-one indicators of correct answers, and delete one of them uniformly at random. Let $A$ be the mean of the $n$ remaining indicators and $B$ the mean of the original $n+1$. Conditional on all the indicators, $\E[A\mid\text{indicators}]=B$. Jensen's inequality gives $\phi(B)\leq\E[\phi(A)\mid\text{indicators}]$. Taking expectations proves the assertion, since $A$ and $B$ have the distributions of $S_n$ and $S_{n+1}$. Iterate to obtain the general case.
+\end{proof}
+
+Thus a convex utility of the percentage score favours a shorter test; a concave utility favours a longer test; and a linear utility is indifferent. Real grading preferences often have thresholds and are neither globally convex nor globally concave.
+
+\section{Two ways to define an optimal length}
+\subsection{Maximise perfection subject to a risk limit}
+Choose a bad-mark threshold $r$ and a maximum acceptable risk $\delta$. The student's problem is
+\begin{equation}
+ \boxed{\quad\underset{n\in\{1,2,\ldots\}}{\operatorname{maximise}}\ (1-\varepsilon)^n
+ \quad\text{subject to}\quad B_n(r,\varepsilon)\leq\delta.\quad}
+ \label{eq:constraint}
+\end{equation}
+As the objective is strictly decreasing in $n$, the optimal length is simply the \emph{smallest feasible} integer $n$. This does not imply that the constraint itself becomes monotonically easier with $n$: its feasible set can have gaps.
+
+If $\varepsilon<1-r$, the law of large numbers gives $B_n(r,\varepsilon)\to0$, so at least one feasible length exists for every $\delta>0$. If the underlying error rate is too high for the proposed mark threshold, there need not be any feasible length at all.
+
+\subsection{Reward a perfect score and penalise a bad one}
+An alternative is an expected utility
+\begin{equation}
+ U_\lambda(n)=(1-\varepsilon)^n-\lambda B_n(r,\varepsilon),
+ \qquad\lambda>0.
+ \label{eq:utility}
+\end{equation}
+The coefficient $\lambda$ says how costly a bad score is compared with the benefit assigned to a perfect one. This objective can have a finite interior optimum even though there is no explicit cost per question. Unlike the constrained problem, however, the answer depends on a subjective parameter $\lambda$.
+
+\section{Worked example: a seven-question exam}
+Suppose $\varepsilon=0.05$, a bad mark is \emph{below} $70\%$ ($r=0.70$), and the student allows at most a $1\%$ chance of a bad mark ($\delta=0.01$). Direct evaluation of \eqref{eq:extremes} and \eqref{eq:bad} gives:
+\begin{center}
+\begin{tabular}{@{}r r r@{}}
+\toprule
+Questions $n$ & $\Prb(100\%)$ & $\Prb(S_n<70\%)$\\
+\midrule
+1 & 95.00\% & 5.0000\%\\
+2 & 90.25\% & 9.7500\%\\
+3 & 85.74\% & 14.2625\%\\
+4 & 81.45\% & 1.4019\%\\
+5 & 77.38\% & 2.2593\%\\
+6 & 73.51\% & 3.2774\%\\
+\rowcolor{blue!7}7 & 69.83\% & 0.3757\%\\
+8 & 66.34\% & 0.5788\%\\
+9 & 63.02\% & 0.8361\%\\
+10 & 59.87\% & 0.1028\%\\
+20 & 35.85\% & 0.0034\%\\
+\bottomrule
+\end{tabular}
+\end{center}
+Every $n\leq6$ violates the $1\%$ risk limit, while $n=7$ meets it. Therefore \textbf{$n=7$ is the global optimum} of \eqref{eq:constraint}. Its chance of a perfect score is about $69.8\%$ and the chance of a bad score is about $0.376\%$.
+
+The risk changes discontinuously when another error becomes tolerable. At $n=6$, two errors give $4/6\approx66.7\%$, below 70\%. At $n=7$, two errors give $5/7\approx71.4\%$, above the threshold; now three errors are needed for a bad result. Hence the dramatic drop between six and seven questions, followed by another rise.
+
+The same parameters with $\lambda=20$ in \eqref{eq:utility} also yield $n=7$. To establish this globally, note that $U_{20}(7)\approx0.62320$, while for all $n\geq10$,
+$U_{20}(n)\leq0.95^n\leq0.95^{10}\approx0.59874$; direct checking of $n=1,\ldots,9$ completes the proof.
+
+\section{Concentration and the method of types}
+The exact probability of an empirical error frequency $x=k/n$ is
+\begin{equation}
+ \Prb(K_n=nx)={n\choose nx}\varepsilon^{nx}(1-\varepsilon)^{n(1-x)}.
+\end{equation}
+For types $x$ away from the endpoints, its exponential scale is controlled by the binary relative entropy
+\begin{equation}
+ D(x\Vert\varepsilon)=x\log\frac{x}{\varepsilon}+(1-x)\log\frac{1-x}{1-\varepsilon},
+ \qquad
+ \Prb(K_n=nx)=\exp\{-nD(x\Vert\varepsilon)+O(\log n)\}.
+\end{equation}
+Set $q=1-r$. When $q>\varepsilon$, a standard Chernoff bound gives
+\begin{equation}
+ B_n(r,\varepsilon)=\Prb(K_n/n>q)
+ \leq \exp\{-nD(q\Vert\varepsilon)\}.
+ \label{eq:chernoff}
+\end{equation}
+In contrast, the exact probability of perfection is
+\begin{equation}
+ \Prb(S_n=1)=\exp\{-nI_0\},\qquad I_0=-\log(1-\varepsilon).
+\end{equation}
+The two outcomes thus have different exponential rates. Inequality \eqref{eq:chernoff} supplies a sufficient (not necessary) risk guarantee:
+\begin{equation}
+ n\geq\frac{\log(1/\delta)}{D(q\Vert\varepsilon)}.
+\end{equation}
+For the worked example, this bound requires $n\geq15$, while the exact optimum is only $7$. A coarse asymptotic approximation misses the integer cutoff effects that dominate short exams.
+
+\section{Questions worth exploring}
+\begin{enumerate}
+\item \textbf{The sawtooth structure.} Characterise the local minima of $B_n(r,\varepsilon)$ as the cutoff $m(n,r)$ jumps. How does this depend on rational or irrational $r$?
+\item \textbf{Utility.} For which classes of score-based utility functions is the best length finite? Convex-order comparison settles globally convex and concave utilities, but threshold utilities can behave differently.
+\item \textbf{Limits.} How well do exact binomial probabilities, Chernoff bounds, and normal approximations agree at the optimum?
+\item \textbf{Real exams.} Questions differ in difficulty, answers are correlated, and fatigue may change error probability with length. How much of the simple model survives these effects?
+\end{enumerate}
+
+\section*{Interactive companion}
+An exact binomial calculator, with adjustable error probability, grade threshold, and risk tolerance, is available at
+\begin{center}
+\url{https://grantaj.github.io/optimal-exam/}.
+\end{center}
+The associated source and the paper are at \url{https://github.com/grantaj/optimal-exam}.
+\end{document}

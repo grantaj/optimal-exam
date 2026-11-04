@@ -1,0 +1,49 @@
+name: Test and build paper
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check calculator
+        run: npm test
+      - name: Install LaTeX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends latexmk texlive-latex-base texlive-latex-recommended texlive-fonts-recommended
+      - name: Compile LaTeX paper
+        run: |
+          export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct -- paper/optimal-exam.tex)"
+          export FORCE_SOURCE_DATE=1
+          mkdir -p build
+          latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error -outdir=build paper/optimal-exam.tex
+          cp build/optimal-exam.pdf optimal-exam.pdf
+      - name: Upload PDF build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: optimal-exam-pdf
+          path: optimal-exam.pdf
+      # GitHub Pages is configured to publish / on main. Keep its PDF in sync.
+      - name: Publish rebuilt PDF to main
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add optimal-exam.pdf
+          if ! git diff --cached --quiet; then
+            git commit -m "Build paper PDF [skip ci]"
+            git push
+          fi

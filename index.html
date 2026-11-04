@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Find the optimal test length using exact binomial probabilities. Interactive companion to How Long Should an Exam Be?">
+  <meta name="theme-color" content="#f5f7fc">
+  <title>How long should an exam be?</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <script type="module" src="assets/app.js"></script>
+</head>
+<body>
+  <div class="site-shell">
+    <header class="site-header">
+      <a class="wordmark" href="./" aria-label="Optimal exam home"><span class="mark">∑</span> OPTIMAL EXAM</a>
+      <nav aria-label="Resources">
+        <a href="optimal-exam.pdf" class="pdf-link">Read the paper <span aria-hidden="true">↗</span></a>
+        <a href="https://github.com/grantaj/optimal-exam" target="_blank" rel="noopener noreferrer">Source</a>
+      </nav>
+    </header>
+    <main>
+      <section class="hero">
+        <p class="eyebrow">A probability experiment</p>
+        <h1>How long should <em>an exam</em> be?</h1>
+        <p class="lede">Fewer questions give you a better shot at 100% — but a single mistake can be disastrous. Find the shortest exam that keeps the risk of a bad mark acceptably small.</p>
+        <div class="hero-actions"><a class="primary-link" href="#calculator">Explore the calculator <span aria-hidden="true">↓</span></a><a class="quiet-link" href="optimal-exam.pdf">Download the mathematical write-up (PDF)</a></div>
+      </section>
+      <div class="workbench" id="calculator">
+        <section class="controls panel" aria-labelledby="settings-title">
+          <div class="panel-heading"><span class="step-label">01 / SETUP</span><h2 id="settings-title">Your assumptions</h2><p>Imagine that every question has the same independent chance of being wrong.</p></div>
+          <div class="control"><div class="control-top"><label for="error-rate">Chance of getting a question wrong</label><output for="error-rate" id="error-value">5%</output></div><input id="error-rate" type="range" min="1" max="25" step="1" value="5"><div class="range-labels"><span>1%</span><span>25%</span></div></div>
+          <div class="control"><div class="control-top"><label for="bad-threshold">A bad mark is anything below</label><output for="bad-threshold" id="threshold-value">70%</output></div><input id="bad-threshold" type="range" min="40" max="90" step="5" value="70"><div class="range-labels"><span>40%</span><span>90%</span></div></div>
+          <div class="control"><div class="control-top"><label for="risk-tolerance">Maximum acceptable chance of a bad mark</label><output for="risk-tolerance" id="tolerance-value">1%</output></div><input id="risk-tolerance" type="range" min="1" max="20" step="1" value="1"><div class="range-labels"><span>1%</span><span>20%</span></div></div>
+          <button class="reset-button" id="reset" type="button">↺ Reset to example</button>
+        </section>
+        <section class="results panel" aria-labelledby="result-title" aria-live="polite">
+          <div class="panel-heading"><span class="step-label">02 / RESULT</span><h2 id="result-title">The optimal test</h2><p>Maximise the chance of 100% while keeping the bad-mark risk below your limit.</p></div>
+          <div class="optimal-summary" id="optimal-summary"><div class="optimal-main"><div><span class="metric-label">Optimal length</span><div class="large-number"><strong id="optimal-length">7</strong><span>questions</span></div></div><span class="optimal-tag">Shortest safe test</span></div><div class="key-metrics"><div><span class="metric-label">Chance of 100%</span><strong id="perfect-result">69.8%</strong></div><div><span class="metric-label">Chance of a bad mark</span><strong id="bad-result">0.376%</strong></div></div></div>
+          <p class="result-explanation" id="result-explanation"></p>
+          <button id="use-optimal" class="select-optimal" type="button">Inspect the optimal length <span aria-hidden="true">→</span></button>
+        </section>
+      </div>
+      <section class="explore panel" aria-labelledby="explore-title">
+        <div class="explore-header"><div><span class="step-label">03 / EXPLORE</span><h2 id="explore-title">What happens at different lengths?</h2><p>Move the slider to inspect any test on the charts. The risk curve can jump up and down because grade thresholds admit a whole number of mistakes.</p></div></div>
+        <div class="control selected-control"><div class="control-top"><label for="selected-length">Inspect a test of this length</label><output for="selected-length" id="selected-value">7</output></div><input id="selected-length" type="range" min="1" max="28" step="1" value="7"></div>
+        <div class="inspection" aria-live="polite"><div><span class="metric-label">Chance of 100%</span><strong id="selected-perfect">69.83%</strong></div><div><span class="metric-label">Chance of a bad mark</span><strong id="selected-bad">0.376%</strong></div><div><span class="metric-label">Expected mark</span><strong id="selected-expected">95%</strong></div><div><span class="metric-label">Bad score requires</span><strong id="bad-count">3 or more mistakes</strong></div></div>
+        <div class="graphs"><figure><figcaption><span class="chart-dot blue"></span> Chance of a perfect score</figcaption><svg id="perfect-chart" class="prob-chart" viewBox="0 0 710 210"></svg></figure><figure><figcaption><span class="chart-dot coral"></span> Chance of scoring below the threshold <small>Dashed = risk limit</small></figcaption><svg id="bad-chart" class="prob-chart" viewBox="0 0 710 210"></svg></figure></div>
+        <p id="plot-range" class="plot-note"></p>
+      </section>
+      <section class="math-note"><div><span class="step-label">THE MATHEMATICS</span><h2>Same expected mark. Different risks.</h2><p>If the error probability is <i>ε</i> and there are <i>n</i> independent questions, the number of mistakes follows a binomial distribution. The expected score is always <b>1 − ε</b>, but the variance is <b>ε(1 − ε)/n</b>.</p><p>The chance of perfection, <b>(1 − ε)<sup>n</sup></b>, falls with test length. The chance of a bad score usually decreases on a larger scale, but it has sharp jumps at short lengths. Those jumps are exactly why seven questions wins in the default example.</p></div><a class="paper-card" href="optimal-exam.pdf"><span>THE FULL DERIVATION</span><strong>Proofs, binomial tails, and large deviations</strong><span class="paper-arrow">Read PDF ↗</span></a></section>
+    </main>
+    <footer><span>Optimal Exam · An experiment in probability and decision-making</span><a href="https://github.com/grantaj/optimal-exam">View on GitHub ↗</a></footer>
+  </div>
+</body>
+</html>

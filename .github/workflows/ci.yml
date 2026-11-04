@@ -23,7 +23,7 @@ jobs:
       - name: Install LaTeX
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends latexmk texlive-latex-base texlive-latex-recommended texlive-fonts-recommended
+          sudo apt-get install -y --no-install-recommends latexmk texlive-latex-base texlive-latex-recommended texlive-fonts-recommended lmodern
       - name: Compile LaTeX paper
         run: |
           export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct -- paper/optimal-exam.tex)"
